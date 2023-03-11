@@ -1,4 +1,4 @@
-import express, { response } from 'express'
+import express from 'express'
 import Product from '../model/Product.js'
 let product_Router = express.Router()
 
@@ -6,23 +6,7 @@ let product_Router = express.Router()
 product_Router.get("/test", (req, resp) => {
     resp.send("Routing")
 })
-/* 
-Use:Single product
-URL:localhost:8080/products/:id
-method:Get
-Req Fields: 
-*/
-product_Router.get("/:id", async (req, resp) => {
-    console.log(req.params.id)
-    try {
-        let productId = req.params.id
-        let product = await Product.findById(productId)
-        resp.status(200).json({ msg: "Displaying product", product: product })
-    }
-    catch (err) {
 
-    }
-})
 /* 
 Use:create product
 URL:localhost:8080/products/
@@ -60,15 +44,6 @@ product_Router.get("/", async (req, resp) => {
         resp.status(500).json({ message: "unable to Fetch", err: err })
     }
 })
-product_Router.delete("/:id", async (req, resp) => {
-    try {
-        let productId = req.params.id;
-        let product = await Product.findByIdAndDelete(productId)
-        resp.status(200).json({ msg: "Delete buddy" })
-    }
-    catch (err) {
 
-    }
-})
 
 export default product_Router;
