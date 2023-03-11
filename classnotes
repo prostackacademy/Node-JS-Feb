@@ -1,0 +1,9 @@
+npm init
+npm i express mongoose chalk morgan cors  nodemon dotenv
+
+step 1:create express app/server
+step 2:connect to local/cloud mongodb 
+step 3:implement express routing 
+step 4:create DB Table/Collection Schema
+step 5:Develop Rest API (CRUD)
+step 6:Test Rest API using POSTMAN/insomnia
