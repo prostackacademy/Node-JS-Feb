@@ -26,6 +26,9 @@ app.get("/", (req, resp) => {
 //router request
 app.use("/user", router)
 
+//router request for prdoucts
+//app.use("/product", router)
+
 mongoose.connect(mongodb_url)
     .then(() => {
         console.log(`MongoDB - connection successful`)

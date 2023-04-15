@@ -1,53 +1,86 @@
 import express from 'express'
 let router = express.Router()
+import jwt from 'jsonwebtoken'
 import User from '../model/User.js'
 
-router.get("/all", (req, resp) => {
+/*
+URL: localhost:8080/user/test
+*/
+router.get("/test", (req, resp) => {
     console.log(`app - running!`)
     resp.send("Test API......")
 
 })
-/* 
-use : create new user 
+
+//create mew user
+
+/*
 url:localhost:8080/user/add
 method:POST
-req fields:name,email, password
+required Fields:name,email,password
 */
 router.post("/add", async (req, resp) => {
+    //how to read form data?
+    let { name, email, password } = req.body;
+    console.log(name)
+    console.log(email)
+    console.log(password)
 
     try {
-        let { name, email, password } = req.body;
-        // user existing or not
-        let user = await User.findOne({ email: email });
+        let user = await User.findOne({ email: email })
         if (user) {
-            return resp.status(401).json({ error: "User Already Existed" });
+            resp.statusCode(401).json({ msg: "User Already Exist" })
         }
-
-        user = new User({ name, email, password });
-        user = await user.save();
-        resp.status(200).json({ result: "success", user: user });
-
+        user = User({ name, email, password })
+        user = await user.save()
+        resp.statusCode(200).json({ msg: "User Reg successfully" })
     }
-    catch (err) {
-        resp.status(500).json({ msg: err })
-    }
+    catch (e) { }
 })
-router.post("/login", (req, resp) => {
+
+/*
+url:localhost:8080/user/login
+method:POST
+required Fields:email, password
+*/
+router.post("/login", async (req, resp) => {
+
+    //read login form data
+    let { email, password } = req.body
+    //console.log(email)
     try {
-        let { email, password } = req.body
-        //verify email  exists or not
-        let user = User.find({ email: email, password: password })
-        if (user) {
-            return resp.status(200).json({ msg: "Login Success" })
+        let user = await User.findOne({ email: email })
+        console.log(user.email + "Test Case 123")
+        if (!user) {
+            return resp.statusCode(401).json({ msg: "User Not Exits" })
         }
-        else {
-            return resp.status(401).json({ msg: "Email/user account not exist" })
 
+        if (user) {
+            console.log(user.password + "Test Case 1234")
+            if (user.password == password) {
+                //generat token
+                console.log(user.password + "Test Case 1234")
+                let payload = { email, password }
+                let token = jwt.sign(payload, "xyz123", (err, token) => {
+                    if (err) throw err;
+                    resp.status(200).json({
+                        result: "Login Success",
+                        token: token,
+                    });
+                });
+                console.log(token)
+                resp.statusCode(200).json({ token: token, user: user })
+            }
+            else {
+                return resp.statusCode(401).json({ msg: "Password Not Matching" })
+            }
         }
+
 
     }
-    catch (err) {
-        resp.status(500).json({ err: err })
+    catch (e) {
+
     }
 })
+
 export default router
